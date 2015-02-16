@@ -25,7 +25,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let masterNavigationController = splitViewController.viewControllers[0] as UINavigationController
         let controller = masterNavigationController.topViewController as MasterViewController
         controller.managedObjectContext = self.managedObjectContext
+        
+        
+        //registering for sending user various kinds of notifications
+        application.registerUserNotificationSettings(UIUserNotificationSettings(
+            forTypes: UIUserNotificationType.Sound|UIUserNotificationType.Alert|UIUserNotificationType.Badge,
+            categories: nil))
+        
+        var localNotification:UILocalNotification = UILocalNotification()
+        localNotification.alertAction = "Testing notifications on iOS8"
+        localNotification.alertBody = "Woww it works!!"
+        localNotification.fireDate = NSDate(timeIntervalSinceNow: 30)
+        UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
+        
+//        UIApplication.sharedApplication().registerUserNotificationSettings(UIRemoteNotificationType.Alert|UIRemoteNotificationType.Badge|UIRemoteNotificationType.Sound)
+        UIApplication.sharedApplication().registerForRemoteNotifications()
+        
         return true
+    }
+    
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        //        NSLog(@"Got device token: %@", [devToken description]);
+        let devToken = deviceToken.description.stringByReplacingOccurrencesOfString("<", withString: "")
+                                              .stringByReplacingOccurrencesOfString(">", withString: "")
+                                              .stringByReplacingOccurrencesOfString(" ", withString: "")
+        println("Got device token: \(deviceToken.description)")
+        println("-- \(devToken)")
+        
+        self.sendProviderDeviceToken(deviceToken.bytes); // custom method; e.g., send to a web service and store
+    }
+    
+    func sendProviderDeviceToken(bytes: UnsafePointer<Void>) {
+        let int8Ptr = unsafeBitCast(bytes, UnsafePointer<Int8>.self)
+        println(String.fromCString(int8Ptr))
+    }
+    
+    func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
+        println("Error in registration. Error: \(error)")
     }
 
     func applicationWillResignActive(application: UIApplication) {
