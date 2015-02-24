@@ -43,7 +43,7 @@ class LoginViewController: UIViewController {
             
             NSLog("PostData: %@",post);
             
-            var url:NSURL = NSURL(string: "https://dipinkrishna.com/jsonlogin2.php")!
+            var url:NSURL = NSURL(string: GlobalConstants.LOGIN_URL)!
             
             var postData:NSData = post.dataUsingEncoding(NSASCIIStringEncoding)!
             

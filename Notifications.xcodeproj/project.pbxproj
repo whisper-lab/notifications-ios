@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B2097221A9CE8FC00E777E2 /* GlobalConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2097211A9CE8FC00E777E2 /* GlobalConstants.swift */; };
 		0B5D27491A9183C900C6C074 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D27481A9183C900C6C074 /* AppDelegate.swift */; };
 		0B5D274C1A9183C900C6C074 /* Notifications.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D274A1A9183C900C6C074 /* Notifications.xcdatamodeld */; };
 		0B5D274E1A9183C900C6C074 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D274D1A9183C900C6C074 /* MasterViewController.swift */; };
@@ -31,6 +32,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0B2097211A9CE8FC00E777E2 /* GlobalConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalConstants.swift; sourceTree = "<group>"; };
 		0B5D27431A9183C900C6C074 /* Notifications.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notifications.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B5D27471A9183C900C6C074 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0B5D27481A9183C900C6C074 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				0B5D274F1A9183C900C6C074 /* DetailViewController.swift */,
 				0B9910BC1A9C9E5100F6E2AD /* LoginViewController.swift */,
 				0B9910BE1A9C9FEA00F6E2AD /* SignupViewController.swift */,
+				0B2097211A9CE8FC00E777E2 /* GlobalConstants.swift */,
 				0B5D27511A9183C900C6C074 /* Main.storyboard */,
 				0B5D27541A9183C900C6C074 /* Images.xcassets */,
 				0B5D27561A9183C900C6C074 /* LaunchScreen.xib */,
@@ -233,6 +236,7 @@
 				0B9910BB1A9C9B2900F6E2AD /* MoreViewController.swift in Sources */,
 				0B5D274C1A9183C900C6C074 /* Notifications.xcdatamodeld in Sources */,
 				0B5D27491A9183C900C6C074 /* AppDelegate.swift in Sources */,
+				0B2097221A9CE8FC00E777E2 /* GlobalConstants.swift in Sources */,
 				0B5D274E1A9183C900C6C074 /* MasterViewController.swift in Sources */,
 				0B5D27501A9183C900C6C074 /* DetailViewController.swift in Sources */,
 			);
