@@ -35,6 +35,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
         }
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        self.performSegueWithIdentifier("goto_login", sender: self)
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
