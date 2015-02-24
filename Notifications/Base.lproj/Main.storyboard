@@ -395,6 +395,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="segmentedctlSex" destination="lit-Yv-Bwb" id="xiB-fN-uaz"/>
                         <outlet property="txtConfirmPassword" destination="xeK-W0-3ca" id="0Fm-qc-Q25"/>
                         <outlet property="txtEmail" destination="wru-Ff-oPf" id="dpB-9V-iTy"/>
                         <outlet property="txtName" destination="Qn1-ie-nVh" id="7Oo-tv-tsB"/>
@@ -441,6 +442,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Tll-UG-LXB"/>
+        <segue reference="6S0-TO-JiA"/>
     </inferredMetricsTieBreakers>
 </document>
