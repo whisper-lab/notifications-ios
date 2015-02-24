@@ -57,23 +57,21 @@ class SignupViewController: UIViewController {
             alertView.show()
         } else {
             
-            var post:NSString = "name=\(name)&email=\(email)&password=\(password)&sex=\(sex)"
-            
-            NSLog("PostData: %@",post);
+            var params = ["user": ["name":name, "email":email, "password":password, "sex":sex]]
+            NSLog("PostData: %@",params);
             
             var url:NSURL = NSURL(string: GlobalConstants.SIGNUP_URL)!
             
-            var postData:NSData = post.dataUsingEncoding(NSASCIIStringEncoding)!
-            
-            var postLength:NSString = String( postData.length )
+            var err: NSError?
+            var postData:NSData? = NSJSONSerialization.dataWithJSONObject(params, options: nil, error: &err)
+            var postLength:NSString = String( postData!.length )
             
             var request:NSMutableURLRequest = NSMutableURLRequest(URL: url)
             request.HTTPMethod = "POST"
             request.HTTPBody = postData
             request.setValue(postLength, forHTTPHeaderField: "Content-Length")
-            request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
-            
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.addValue("application/json", forHTTPHeaderField: "Accept")
             
             var reponseError: NSError?
             var response: NSURLResponse?
@@ -143,6 +141,76 @@ class SignupViewController: UIViewController {
                 alertView.show()
             }
         }
+    }
+    
+    func sample_async_post_call() {
+        // Correct url and username/password
+        self.post(["username":"jameson", "password":"password"], url: "http://localhost:4567/login") { (succeeded: Bool, msg: String) -> () in
+            var alert = UIAlertView(title: "Success!", message: msg, delegate: nil, cancelButtonTitle: "Okay.")
+            if(succeeded) {
+                alert.title = "Success!"
+                alert.message = msg
+            }
+            else {
+                alert.title = "Failed : ("
+                alert.message = msg
+            }
+            
+            // Move to the UI thread
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                // Show the alert
+                alert.show()
+            })
+        }
+    }
+    
+    func post(params : Dictionary<String, String>, url : String, postCompleted : (succeeded: Bool, msg: String) -> ()) {
+        var request = NSMutableURLRequest(URL: NSURL(string: url)!)
+        var session = NSURLSession.sharedSession()
+        request.HTTPMethod = "POST"
+        
+        var err: NSError?
+        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(params, options: nil, error: &err)
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        var task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
+            println("Response: \(response)")
+            var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
+            println("Body: \(strData)")
+            var err: NSError?
+            var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? NSDictionary
+            
+            var msg = "No message"
+            
+            // Did the JSONObjectWithData constructor return an error? If so, log the error to the console
+            if(err != nil) {
+                println(err!.localizedDescription)
+                let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
+                println("Error could not parse JSON: '\(jsonStr)'")
+                postCompleted(succeeded: false, msg: "Error")
+            }
+            else {
+                // The JSONObjectWithData constructor didn't return an error. But, we should still
+                // check and make sure that json has a value using optional binding.
+                if let parseJSON = json {
+                    // Okay, the parsedJSON is here, let's get the value for 'success' out of it
+                    if let success = parseJSON["success"] as? Bool {
+                        println("Succes: \(success)")
+                        postCompleted(succeeded: success, msg: "Logged in.")
+                    }
+                    return
+                }
+                else {
+                    // Woa, okay the json object was nil, something went worng. Maybe the server isn't running?
+                    let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
+                    println("Error could not parse JSON: \(jsonStr)")
+                    postCompleted(succeeded: false, msg: "Error")
+                }
+            }
+        })
+        
+        task.resume()
     }
     
     @IBAction func gotoLogin(sender: UIButton) {
