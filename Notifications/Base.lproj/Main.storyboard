@@ -69,9 +69,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8D7-Gh-saF">
-                                <rect key="frame" x="260" y="265" width="80" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8D7-Gh-saF">
+                                <rect key="frame" x="266" y="360" width="69" height="30"/>
                                 <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="qmj-Ja-7kJ"/>
+                                </constraints>
+                                <inset key="contentEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
                                 <state key="normal" title="Logout">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -80,20 +84,38 @@
                                     <action selector="logoutTapped:" destination="0zI-Tr-TgO" eventType="touchUpInside" id="hGK-Mt-Mjf"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Welcome" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ius-6h-d0m">
-                                <rect key="frame" x="265" y="89" width="71" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ius-6h-d0m">
+                                <rect key="frame" x="265" y="248" width="71" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="lJW-EJ-jHK"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O87-d0-SYd">
-                                <rect key="frame" x="16" y="151" width="568" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O87-d0-SYd">
+                                <rect key="frame" x="16" y="289" width="568" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="s0d-xt-3fU"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.65064578770000003" green="0.88341799620000006" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="8D7-Gh-saF" firstAttribute="top" relation="greaterThanOrEqual" secondItem="O87-d0-SYd" secondAttribute="bottom" constant="8" symbolic="YES" id="7Zl-qZ-eOg"/>
+                            <constraint firstItem="phg-Bl-Xz2" firstAttribute="top" relation="greaterThanOrEqual" secondItem="8D7-Gh-saF" secondAttribute="bottom" constant="8" symbolic="YES" id="DBu-qS-xtr"/>
+                            <constraint firstItem="8D7-Gh-saF" firstAttribute="top" secondItem="O87-d0-SYd" secondAttribute="bottom" priority="750" constant="50" id="Dze-PD-Cg9"/>
+                            <constraint firstAttribute="centerX" secondItem="O87-d0-SYd" secondAttribute="centerX" id="SZ6-rK-Xva"/>
+                            <constraint firstAttribute="centerY" secondItem="O87-d0-SYd" secondAttribute="centerY" constant="0.5" id="WMq-uW-GnZ"/>
+                            <constraint firstItem="phg-Bl-Xz2" firstAttribute="top" secondItem="8D7-Gh-saF" secondAttribute="bottom" priority="250" constant="141" id="fLY-0P-b23"/>
+                            <constraint firstAttribute="centerX" secondItem="ius-6h-d0m" secondAttribute="centerX" constant="-0.5" id="iNm-zG-HFu"/>
+                            <constraint firstItem="O87-d0-SYd" firstAttribute="top" secondItem="ius-6h-d0m" secondAttribute="bottom" constant="20" id="o7I-zL-edU"/>
+                            <constraint firstItem="O87-d0-SYd" firstAttribute="trailing" secondItem="HoY-Cx-LSo" secondAttribute="trailingMargin" id="rzx-ev-4Ex"/>
+                            <constraint firstAttribute="centerX" secondItem="8D7-Gh-saF" secondAttribute="centerX" id="zur-oX-xIh"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Ddj-uK-Hj7"/>
                     <connections>
