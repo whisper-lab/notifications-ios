@@ -17,6 +17,15 @@ class MoreViewController: UIViewController {
 
         // Do any additional setup after loading the view.
     }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(true)
+        let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
+        if (isLoggedIn == 1) {
+            self.nameLabel.text = prefs.valueForKey("EMAIL") as NSString
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
