@@ -93,13 +93,12 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O87-d0-SYd">
-                                <rect key="frame" x="16" y="289" width="568" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lesha.pus@gmail.com" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O87-d0-SYd">
+                                <rect key="frame" x="215" y="289" width="171" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="s0d-xt-3fU"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -116,6 +115,11 @@
                             <constraint firstItem="O87-d0-SYd" firstAttribute="trailing" secondItem="HoY-Cx-LSo" secondAttribute="trailingMargin" id="rzx-ev-4Ex"/>
                             <constraint firstAttribute="centerX" secondItem="8D7-Gh-saF" secondAttribute="centerX" id="zur-oX-xIh"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="rzx-ev-4Ex"/>
+                            </mask>
+                        </variation>
                     </view>
                     <navigationItem key="navigationItem" id="Ddj-uK-Hj7"/>
                     <connections>
