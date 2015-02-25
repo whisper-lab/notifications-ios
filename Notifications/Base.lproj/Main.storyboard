@@ -129,7 +129,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="T7A-Ck-fQz">
             <objects>
-                <tabBarController id="pTI-3o-0Sd" sceneMemberID="viewController">
+                <tabBarController id="pTI-3o-0Sd" customClass="TabBarController" customModule="Notifications" customModuleProvider="target" sceneMemberID="viewController">
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="LLL-8S-qN4">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
@@ -139,6 +139,7 @@
                     <connections>
                         <segue destination="H1p-Uh-vWS" kind="relationship" relationship="viewControllers" id="Qa1-H7-TQg"/>
                         <segue destination="LpO-jw-9qE" kind="relationship" relationship="viewControllers" id="bzs-GG-fZV"/>
+                        <segue destination="ncI-sx-lbL" kind="presentation" identifier="goto_login" id="Ahz-eB-Yok"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2Lg-No-V2m" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -199,7 +200,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Master" id="Zdf-7t-Un8"/>
                     <connections>
-                        <segue destination="ncI-sx-lbL" kind="presentation" identifier="goto_login" id="mIT-5y-XLo"/>
+                        <segue destination="ncI-sx-lbL" kind="presentation" identifier="goto_login_old" id="mIT-5y-XLo"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rux-fX-hf1" sceneMemberID="firstResponder"/>
@@ -464,6 +465,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="Ahz-eB-Yok"/>
         <segue reference="6S0-TO-JiA"/>
     </inferredMetricsTieBreakers>
 </document>

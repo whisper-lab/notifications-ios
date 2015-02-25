@@ -16,6 +16,7 @@
 		0B5D27551A9183C900C6C074 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0B5D27541A9183C900C6C074 /* Images.xcassets */; };
 		0B5D27581A9183C900C6C074 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B5D27561A9183C900C6C074 /* LaunchScreen.xib */; };
 		0B5D27641A9183C900C6C074 /* NotificationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D27631A9183C900C6C074 /* NotificationsTests.swift */; };
+		0B793E051A9DB9FF004D334F /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B793E041A9DB9FF004D334F /* TabBarController.swift */; };
 		0B9910BB1A9C9B2900F6E2AD /* MoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B9910BA1A9C9B2900F6E2AD /* MoreViewController.swift */; };
 		0B9910BD1A9C9E5100F6E2AD /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B9910BC1A9C9E5100F6E2AD /* LoginViewController.swift */; };
 		0B9910BF1A9C9FEA00F6E2AD /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B9910BE1A9C9FEA00F6E2AD /* SignupViewController.swift */; };
@@ -45,6 +46,7 @@
 		0B5D275D1A9183C900C6C074 /* NotificationsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotificationsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B5D27621A9183C900C6C074 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0B5D27631A9183C900C6C074 /* NotificationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsTests.swift; sourceTree = "<group>"; };
+		0B793E041A9DB9FF004D334F /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		0B9910BA1A9C9B2900F6E2AD /* MoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreViewController.swift; sourceTree = "<group>"; };
 		0B9910BC1A9C9E5100F6E2AD /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		0B9910BE1A9C9FEA00F6E2AD /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				0B5D27481A9183C900C6C074 /* AppDelegate.swift */,
+				0B793E041A9DB9FF004D334F /* TabBarController.swift */,
 				0B9910BA1A9C9B2900F6E2AD /* MoreViewController.swift */,
 				0B5D274D1A9183C900C6C074 /* MasterViewController.swift */,
 				0B5D274F1A9183C900C6C074 /* DetailViewController.swift */,
@@ -234,6 +237,7 @@
 				0B9910BD1A9C9E5100F6E2AD /* LoginViewController.swift in Sources */,
 				0B9910BF1A9C9FEA00F6E2AD /* SignupViewController.swift in Sources */,
 				0B9910BB1A9C9B2900F6E2AD /* MoreViewController.swift in Sources */,
+				0B793E051A9DB9FF004D334F /* TabBarController.swift in Sources */,
 				0B5D274C1A9183C900C6C074 /* Notifications.xcdatamodeld in Sources */,
 				0B5D27491A9183C900C6C074 /* AppDelegate.swift in Sources */,
 				0B2097221A9CE8FC00E777E2 /* GlobalConstants.swift in Sources */,

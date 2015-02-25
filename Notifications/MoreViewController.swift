@@ -36,7 +36,9 @@ class MoreViewController: UIViewController {
         let appDomain = NSBundle.mainBundle().bundleIdentifier
         NSUserDefaults.standardUserDefaults().removePersistentDomainForName(appDomain!)
         
-        self.performSegueWithIdentifier("goto_login", sender: self)
+        let delegate = UIApplication.sharedApplication().delegate as AppDelegate
+        let tabBarViewController = delegate.window!.rootViewController as UITabBarController
+        tabBarViewController.performSegueWithIdentifier("goto_login", sender: self)
     }
 
     /*
