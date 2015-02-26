@@ -76,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
         let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
         if (isLoggedIn == 1) {
-            self.sendProviderDeviceToken(); // custom method; e.g., send to a web service and store
+            self.registerDeviceForUser(); // custom method; e.g., send to a web service and store
         }
     }
     
@@ -97,13 +97,133 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
     
     func registerDeviceForUser() {
-        println("register")
-        sendProviderDeviceToken()
+        if let devToken = deviceToken {
+            println("register")
+            var tokenString = deviceTokenString(devToken)
+            
+            let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+            let api_key = prefs.stringForKey("API_KEY")!
+            let email = prefs.stringForKey("EMAIL")!
+            let id = 2
+    
+            var params = ["user": ["device_attributes": ["token":tokenString, "platform":"ios"]]]
+            println("PatchData: \(params)")
+            
+            // Correct url and username/password
+            self.patch(params, withTokenStr: "\(email):\(api_key)", url: GlobalConstants.USERS_URL+"/\(id)") { (succeeded: Bool, msg: String, data: NSDictionary?) -> () in
+                
+                // Move to the UI thread
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    if(succeeded) {
+                        println("register SUCCESS");
+                        if let d = data {
+                            println(d)
+                        }
+                    }
+                    else {
+                        println("register failed");
+                        if let d = data {
+                            println(d)
+                        }
+                    }
+                })
+            }
+        }
+        else {
+            println("register: failed - divece token == nil")
+        }
     }
     
     func unregisterDeviceForUser() {
         println("unregister")
     }
+    
+    func patch(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: NSDictionary?) -> ()) {
+        var request = NSMutableURLRequest(URL: NSURL(string: url)!)
+        var session = NSURLSession.sharedSession()
+        
+        var err: NSError?
+        var postData:NSData? = NSJSONSerialization.dataWithJSONObject(params, options: nil, error: &err)
+        var postLength:NSString = String( postData!.length )
+        
+        request.HTTPMethod = "PATCH"
+        request.HTTPBody = postData
+        request.setValue(postLength, forHTTPHeaderField: "Content-Length")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        if let token = tokenStr {
+            request.addValue("Token token=\"\(token)\"", forHTTPHeaderField: "Authorization")
+        }
+        
+        var task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
+            println("Response: \(response)")
+            
+            let res = response as NSHTTPURLResponse!
+            if (res != nil) {
+                NSLog("Response code: %ld", res.statusCode)
+            }
+            
+            if (error == nil /*&& res.statusCode >= 200 && res.statusCode < 300*/) {
+                var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
+                println("Body: \(strData)")
+                var err: NSError?
+                var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? NSDictionary
+                
+                var msg = "No message"
+                
+                // Did the JSONObjectWithData constructor return an error? If so, log the error to the console
+                if(err != nil) {
+                    println(err!.localizedDescription)
+                    let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
+                    println("Error could not parse JSON: '\(jsonStr)'")
+                    postCompleted(succeeded: false, msg: "Error", json: nil)
+                }
+                else {
+                    // The JSONObjectWithData constructor didn't return an error. But, we should still
+                    // check and make sure that json has a value using optional binding.
+                    if let parseJSON = json {
+                        // Okay, the parsedJSON is here, let's get the value for 'success' out of it
+                        //                        if let success = parseJSON["success"] as? Bool {
+                        if (res.statusCode >= 200 && res.statusCode < 300) {
+                            println("Succes")
+                            postCompleted(succeeded: true, msg: "Updated", json: parseJSON)
+                        }
+                        else {
+                            var message = "Connection Failure"
+                            for (key, value) in parseJSON {
+                                if let val = value as? Array<String> {
+                                    if (!val.isEmpty) {
+                                        message = "\(key): \(val[0])"
+                                    }
+                                }
+                            }
+                            postCompleted(succeeded: false, msg: message, json: nil)
+                        }
+                        return
+                    }
+                    else {
+                        // Woa, okay the json object was nil, something went worng. Maybe the server isn't running?
+                        let jsonStr = NSString(data: data, encoding: NSUTF8StringEncoding)
+                        println("Error could not parse JSON: \(jsonStr)")
+                        postCompleted(succeeded: false, msg: "Error", json: nil)
+                    }
+                }
+            }
+            else {
+                var message = "Connection Failure"
+                if let err = error {
+                    message = (err.localizedDescription)
+                }
+                println(message)
+                postCompleted(succeeded: false, msg: "Error", json: nil)
+            }
+            
+            
+        })
+        
+        task.resume()
+    }
+
     
     func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
         println("Error in registration. Error: \(error)")
