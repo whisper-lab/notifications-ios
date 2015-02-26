@@ -13,6 +13,8 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
+    var loginStateDidChangeObserver:NSObjectProtocol?
+    var deviceToken: NSData?
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
@@ -42,23 +44,65 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 //        UIApplication.sharedApplication().registerUserNotificationSettings(UIRemoteNotificationType.Alert|UIRemoteNotificationType.Badge|UIRemoteNotificationType.Sound)
         UIApplication.sharedApplication().registerForRemoteNotifications()
         
+        loginStateDidChangeObserver = NSNotificationCenter.defaultCenter().addObserverForName(GlobalConstants.LoginStateDidChangeNotification, object: nil, queue: nil) { (note:NSNotification!) -> Void in
+            let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+            let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
+            if (isLoggedIn == 1) {
+                self.registerDeviceForUser()
+            }
+            else {
+                self.unregisterDeviceForUser()
+            }
+        }
+        
+        
         return true
     }
     
     func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        self.deviceToken = deviceToken
+        
         //        NSLog(@"Got device token: %@", [devToken description]);
         let devToken = deviceToken.description.stringByReplacingOccurrencesOfString("<", withString: "")
                                               .stringByReplacingOccurrencesOfString(">", withString: "")
                                               .stringByReplacingOccurrencesOfString(" ", withString: "")
         println("Got device token: \(deviceToken.description)")
-        println("-- \(devToken)")
+        println("--")
+        println("\(devToken)")
+        var tokenString = deviceTokenString(deviceToken)
+        println(tokenString)
+        println("--")
         
-        self.sendProviderDeviceToken(deviceToken.bytes); // custom method; e.g., send to a web service and store
+        let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
+        if (isLoggedIn == 1) {
+            self.sendProviderDeviceToken(); // custom method; e.g., send to a web service and store
+        }
     }
     
-    func sendProviderDeviceToken(bytes: UnsafePointer<Void>) {
-        let int8Ptr = unsafeBitCast(bytes, UnsafePointer<Int8>.self)
-        println(String.fromCString(int8Ptr))
+    func deviceTokenString(devToken:NSData) -> String {
+        var tokenChars = UnsafePointer<CChar>(devToken.bytes)
+        var tokenString = ""
+        for var i = 0; i < devToken.length; i++ {
+            tokenString += String(format: "%02.2hhx", arguments: [tokenChars[i]])
+        }
+        return tokenString
+    }
+    
+    func sendProviderDeviceToken() {
+        if let devToken = deviceToken {
+            var tokenString = deviceTokenString(devToken)
+            println(tokenString)
+        }
+    }
+    
+    func registerDeviceForUser() {
+        println("register")
+        sendProviderDeviceToken()
+    }
+    
+    func unregisterDeviceForUser() {
+        println("unregister")
     }
     
     func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {

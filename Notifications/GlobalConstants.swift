@@ -14,4 +14,6 @@ struct GlobalConstants {
 
     static let LOGIN_URL = "https://whisperlab.herokuapp.com/api/auth"
     static let SIGNUP_URL = "https://whisperlab.herokuapp.com/api/users"
+    
+    static let LoginStateDidChangeNotification = "LoginStateDidChangeNotification"
 }

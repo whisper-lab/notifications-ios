@@ -63,6 +63,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                         prefs.setObject(api_key, forKey: "API_KEY")
                         prefs.synchronize()
                         
+                        NSNotificationCenter.defaultCenter().postNotificationName(GlobalConstants.LoginStateDidChangeNotification, object: self)
+                        
                         self.dismissViewControllerAnimated(true, completion: nil)
                     }
                     else {

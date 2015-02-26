@@ -38,6 +38,9 @@ class MoreViewController: UIViewController {
         
         let delegate = UIApplication.sharedApplication().delegate as AppDelegate
         let tabBarViewController = delegate.window!.rootViewController as UITabBarController
+        
+        NSNotificationCenter.defaultCenter().postNotificationName(GlobalConstants.LoginStateDidChangeNotification, object: self)
+        
         tabBarViewController.performSegueWithIdentifier("goto_login", sender: self)
     }
 
