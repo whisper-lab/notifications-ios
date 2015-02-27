@@ -9,12 +9,16 @@
 import UIKit
 import CoreData
 
+var reachability: Reachability?
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
     var loginStateDidChangeObserver:NSObjectProtocol?
+    var reachabilityDidChangeObserver:NSObjectProtocol?
     var deviceToken: NSData?
+    var internetReach: Reachability?
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
@@ -55,8 +59,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             }
         }
         
+        reachabilityDidChangeObserver = NSNotificationCenter.defaultCenter().addObserverForName(kReachabilityChangedNotification, object: nil, queue: nil) { (note:NSNotification!) -> Void in
+            println("Reachability Status Changed...")
+            reachability = note.object as? Reachability
+            self.statusChangedWithReachability(reachability!)
+        }
+
+        internetReach = Reachability.reachabilityForInternetConnection()
+        internetReach?.startNotifier()
+        if internetReach != nil {
+            self.statusChangedWithReachability(internetReach!)
+        }
         
         return true
+    }
+    
+    func statusChangedWithReachability(currentReachabilityStatus: Reachability) {
+        var networkStatus: NetworkStatus = currentReachabilityStatus.currentReachabilityStatus()
+        var statusString: String = ""
+        println("StatusValue: \(networkStatus.value)")
     }
     
     func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
@@ -251,6 +272,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
+        NSNotificationCenter.defaultCenter().removeObserver(self.loginStateDidChangeObserver!)
+        NSNotificationCenter.defaultCenter().removeObserver(self.reachabilityDidChangeObserver!)
     }
 
     // MARK: - Split view

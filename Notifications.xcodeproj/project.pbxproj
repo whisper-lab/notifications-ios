@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0B2097221A9CE8FC00E777E2 /* GlobalConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2097211A9CE8FC00E777E2 /* GlobalConstants.swift */; };
+		0B58D5AC1AA068A600A861BD /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B58D5AB1AA068A600A861BD /* Reachability.m */; };
 		0B5D27491A9183C900C6C074 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D27481A9183C900C6C074 /* AppDelegate.swift */; };
 		0B5D274C1A9183C900C6C074 /* Notifications.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D274A1A9183C900C6C074 /* Notifications.xcdatamodeld */; };
 		0B5D274E1A9183C900C6C074 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D274D1A9183C900C6C074 /* MasterViewController.swift */; };
@@ -34,6 +35,9 @@
 
 /* Begin PBXFileReference section */
 		0B2097211A9CE8FC00E777E2 /* GlobalConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalConstants.swift; sourceTree = "<group>"; };
+		0B58D5A91AA068A500A861BD /* Notifications-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notifications-Bridging-Header.h"; sourceTree = "<group>"; };
+		0B58D5AA1AA068A600A861BD /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		0B58D5AB1AA068A600A861BD /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		0B5D27431A9183C900C6C074 /* Notifications.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notifications.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B5D27471A9183C900C6C074 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0B5D27481A9183C900C6C074 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -111,6 +115,9 @@
 		0B5D27461A9183C900C6C074 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0B58D5AA1AA068A600A861BD /* Reachability.h */,
+				0B58D5AB1AA068A600A861BD /* Reachability.m */,
+				0B58D5A91AA068A500A861BD /* Notifications-Bridging-Header.h */,
 				0B5D27471A9183C900C6C074 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -238,6 +245,7 @@
 				0B9910BF1A9C9FEA00F6E2AD /* SignupViewController.swift in Sources */,
 				0B9910BB1A9C9B2900F6E2AD /* MoreViewController.swift in Sources */,
 				0B793E051A9DB9FF004D334F /* TabBarController.swift in Sources */,
+				0B58D5AC1AA068A600A861BD /* Reachability.m in Sources */,
 				0B5D274C1A9183C900C6C074 /* Notifications.xcdatamodeld in Sources */,
 				0B5D27491A9183C900C6C074 /* AppDelegate.swift in Sources */,
 				0B2097221A9CE8FC00E777E2 /* GlobalConstants.swift in Sources */,
@@ -367,10 +375,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Notifications/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Notifications/Notifications-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -379,10 +390,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Notifications/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Notifications/Notifications-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
