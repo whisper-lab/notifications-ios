@@ -147,30 +147,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
         let api_key = prefs.stringForKey("API_KEY")!
         let email = prefs.stringForKey("EMAIL")!
-        let id = 2
+        let id = prefs.integerForKey("ID")
         
         var params = ["user": ["device_attributes": ["token":token, "platform":"ios"]]]
         println("PatchData: \(params)")
         
         // Correct url and username/password
-        self.patch(params, withTokenStr: "\(email):\(api_key)", url: GlobalConstants.USERS_URL+"/\(id)") { [weak self] (succeeded: Bool, msg: String, data: NSDictionary?) -> () in
+        self.patch(params, withTokenStr: "\(email):\(api_key)", url: GlobalConstants.USERS_URL+"/\(id)") { [weak self] (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> () in
             
             // Move to the UI thread
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 if(succeeded) {
                     println("register SUCCESS");
-                    if let d = data {
+                    if let d = json {
                         println(d)
                     }
                 }
                 else {
                     println("register failed");
-                    if let d = data {
+                    if let d = json {
                         println(d)
                     }
                 }
             })
-            if (!succeeded) {
+            if succeeded {
+                var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+                let name = json!["name"]! as String
+                prefs.setObject(name, forKey: "NAME")
+                if let device = json!["device"] as? [String : AnyObject] {
+                    // safe to use user
+                    let deviceId = device["id"]! as Int
+                    let deviceReceivedToken = device["token"]! as String
+                    let devicePlatform = device["platform"]! as String
+                    prefs.setInteger(deviceId, forKey: "DEVICE_ID")
+                    prefs.setObject(deviceReceivedToken, forKey: "DEVICE_TOKEN")
+                    prefs.setObject(devicePlatform, forKey: "DEVICE_PLATFORM")
+                }
+                else {
+                    println("...with no device info")
+                }
+                prefs.synchronize()
+            }
+            else {
                 let delayInSeconds = 5.0
                 println("second retry after.. \(delayInSeconds) s")
                 println("retries left: \(retryCounter)");
@@ -190,7 +208,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         println("unregister")
     }
     
-    func patch(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: NSDictionary?) -> ()) {
+    func get(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> ()) {
+        httpRequestWithMethod("GET", params: params, withTokenStr: tokenStr, url: url, postCompleted: postCompleted);
+    }
+    
+    func post(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> ()) {
+        httpRequestWithMethod("POST", params: params, withTokenStr: tokenStr, url: url, postCompleted: postCompleted);
+    }
+    
+    func patch(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> ()) {
+        httpRequestWithMethod("PATCH", params: params, withTokenStr: tokenStr, url: url, postCompleted: postCompleted);
+    }
+    
+    func put(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> ()) {
+        httpRequestWithMethod("PUT", params: params, withTokenStr: tokenStr, url: url, postCompleted: postCompleted);
+    }
+    
+    func delete(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> ()) {
+        httpRequestWithMethod("DELETE", params: params, withTokenStr: tokenStr, url: url, postCompleted: postCompleted);
+    }
+    
+    func httpRequestWithMethod(method:String, params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> ()) {
         var request = NSMutableURLRequest(URL: NSURL(string: url)!)
         var session = NSURLSession.sharedSession()
         
@@ -198,7 +236,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         var postData:NSData? = NSJSONSerialization.dataWithJSONObject(params, options: nil, error: &err)
         var postLength:NSString = String( postData!.length )
         
-        request.HTTPMethod = "PATCH"
+        request.HTTPMethod = method
         request.HTTPBody = postData
         request.setValue(postLength, forHTTPHeaderField: "Content-Length")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -219,7 +257,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
                 println("Body: \(strData)")
                 var err: NSError?
-                var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? NSDictionary
+                var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? [String : AnyObject]
                 
                 var msg = "No message"
                 
@@ -237,7 +275,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                         // Okay, the parsedJSON is here, let's get the value for 'success' out of it
                         //                        if let success = parseJSON["success"] as? Bool {
                         if (res.statusCode >= 200 && res.statusCode < 300) {
-                            println("Succes")
+                            println("Success")
                             postCompleted(succeeded: true, msg: "Updated", json: parseJSON)
                         }
                         else {
@@ -249,7 +287,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                                     }
                                 }
                             }
-                            postCompleted(succeeded: false, msg: message, json: nil)
+                            postCompleted(succeeded: false, msg: message, json: parseJSON)
                         }
                         return
                     }

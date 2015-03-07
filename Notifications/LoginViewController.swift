@@ -49,15 +49,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             println("PostData: \(params)")
             
             // Correct url and username/password
-            self.post(params, withTokenStr: GlobalConstants.API_MASTER_KEY, url: GlobalConstants.LOGIN_URL) { (succeeded: Bool, msg: String, json: NSDictionary?) -> () in
+            self.post(params, withTokenStr: GlobalConstants.API_MASTER_KEY, url: GlobalConstants.LOGIN_URL) { (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> () in
                 var alert = UIAlertView(title: "Success!", message: msg, delegate: nil, cancelButtonTitle: "OK")
                 // Move to the UI thread
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     if(succeeded) {
                         println("SUCCESS");
-                        var api_key = msg
+                        let id = json!["id"]! as Int
+                        let api_key = json!["api_key"]! as String
                         
                         var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+                        prefs.setInteger(id, forKey: "ID")
                         prefs.setObject(email, forKey: "EMAIL")
                         prefs.setInteger(1, forKey: "ISLOGGEDIN")
                         prefs.setObject(api_key, forKey: "API_KEY")
@@ -78,7 +80,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    func post(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: NSDictionary?) -> ()) {
+    func post(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> ()) {
         var request = NSMutableURLRequest(URL: NSURL(string: url)!)
         var session = NSURLSession.sharedSession()
         
@@ -107,7 +109,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 var strData = NSString(data: data, encoding: NSUTF8StringEncoding)
                 println("Body: \(strData)")
                 var err: NSError?
-                var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? NSDictionary
+                var json = NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves, error: &err) as? [String : AnyObject]
                 
                 var msg = "No message"
                 
@@ -130,27 +132,30 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                         //                        if let success = parseJSON["success"] as? Bool {
                         if (res.statusCode >= 200 && res.statusCode < 300) {
                             var api_key:String = ""
-                            if let key = parseJSON["api_key"] as? String {
+                            if let key = parseJSON["api_key"]! as? String {
                                 api_key = key
                             }
                             if !api_key.isEmpty {
-                                println("Succes")
+                                println("Success")
                                 postCompleted(succeeded: true, msg: api_key, json: parseJSON)
                             }
                             else {
-                                postCompleted(succeeded: false, msg: "Error", json: nil)
+                                postCompleted(succeeded: false, msg: "Error", json: parseJSON)
                             }
                         }
                         else {
                             var message = "Connection Failure"
-                            for (key, value) in parseJSON {
-                                if let val = value as? Array<String> {
-                                    if (!val.isEmpty) {
-                                        message = "\(key): \(val[0])"
-                                    }
-                                }
+//                            for (key, value) in parseJSON {
+//                                if let val = value as? Array<String> {
+//                                    if (!val.isEmpty) {
+//                                        message = "\(key): \(val[0])"
+//                                    }
+//                                }
+//                            }
+                            if let msg = parseJSON["message"] as? String {
+                                message = msg
                             }
-                            postCompleted(succeeded: false, msg: message, json: nil)
+                            postCompleted(succeeded: false, msg: message, json: parseJSON)
                         }
                         return
                     }

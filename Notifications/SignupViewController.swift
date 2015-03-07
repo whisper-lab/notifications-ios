@@ -136,7 +136,7 @@ class SignupViewController: UIViewController, UITextFieldDelegate {
                         // Okay, the parsedJSON is here, let's get the value for 'success' out of it
 //                        if let success = parseJSON["success"] as? Bool {
                         if (res.statusCode >= 200 && res.statusCode < 300) {
-                            println("Succes")
+                            println("Success")
                             postCompleted(succeeded: true, msg: "Signed Up", json: parseJSON)
                         }
                         else {
@@ -148,7 +148,7 @@ class SignupViewController: UIViewController, UITextFieldDelegate {
                                     }
                                 }
                             }
-                            postCompleted(succeeded: false, msg: message, json: nil)
+                            postCompleted(succeeded: false, msg: message, json: parseJSON)
                         }
                         return
                     }
