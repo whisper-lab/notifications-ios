@@ -78,6 +78,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         var networkStatus: NetworkStatus = currentReachabilityStatus.currentReachabilityStatus()
         var statusString: String = ""
         println("StatusValue: \(networkStatus.value)")
+        if networkStatus.value != NotReachable.value {
+            let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+            let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
+            if (isLoggedIn == 1) {
+                self.registerDeviceForUser()
+            }
+            else {
+            }
+        }
     }
     
     func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
@@ -117,42 +126,64 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
     }
     
-    func registerDeviceForUser() {
+    func registerDeviceForUser(retryCounter:Int = 5) {
         if let devToken = deviceToken {
             println("register")
-            var tokenString = deviceTokenString(devToken)
+            var token = deviceTokenString(devToken)
             
-            let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-            let api_key = prefs.stringForKey("API_KEY")!
-            let email = prefs.stringForKey("EMAIL")!
-            let id = 2
-    
-            var params = ["user": ["device_attributes": ["token":tokenString, "platform":"ios"]]]
-            println("PatchData: \(params)")
-            
-            // Correct url and username/password
-            self.patch(params, withTokenStr: "\(email):\(api_key)", url: GlobalConstants.USERS_URL+"/\(id)") { (succeeded: Bool, msg: String, data: NSDictionary?) -> () in
-                
-                // Move to the UI thread
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    if(succeeded) {
-                        println("register SUCCESS");
-                        if let d = data {
-                            println(d)
-                        }
-                    }
-                    else {
-                        println("register failed");
-                        if let d = data {
-                            println(d)
-                        }
-                    }
-                })
-            }
+            registerDeviceWithRetryCounter(retryCounter, deviceTokenString: token)
         }
         else {
             println("register: failed - divece token == nil")
         }
+    }
+    
+    func registerDeviceWithRetryCounter(var retryCounter:Int, deviceTokenString token: String) {
+        if (retryCounter == 0) {
+            return;
+        }
+        retryCounter--
+        
+        let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        let api_key = prefs.stringForKey("API_KEY")!
+        let email = prefs.stringForKey("EMAIL")!
+        let id = 2
+        
+        var params = ["user": ["device_attributes": ["token":token, "platform":"ios"]]]
+        println("PatchData: \(params)")
+        
+        // Correct url and username/password
+        self.patch(params, withTokenStr: "\(email):\(api_key)", url: GlobalConstants.USERS_URL+"/\(id)") { [weak self] (succeeded: Bool, msg: String, data: NSDictionary?) -> () in
+            
+            // Move to the UI thread
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                if(succeeded) {
+                    println("register SUCCESS");
+                    if let d = data {
+                        println(d)
+                    }
+                }
+                else {
+                    println("register failed");
+                    if let d = data {
+                        println(d)
+                    }
+                }
+            })
+            if (!succeeded) {
+                let delayInSeconds = 5.0
+                println("second retry after.. \(delayInSeconds) s")
+                println("retries left: \(retryCounter)");
+                let delayInNanoSeconds = dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSeconds * Double(NSEC_PER_SEC)))
+                let concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                dispatch_after(delayInNanoSeconds, concurrentQueue, {
+                    /* Perform your operations here */
+                    println("Retry...");
+                    self?.registerDeviceWithRetryCounter(retryCounter, deviceTokenString: token)
+                })
+            }
+        }
+
     }
     
     func unregisterDeviceForUser() {
