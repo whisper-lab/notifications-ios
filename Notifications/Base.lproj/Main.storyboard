@@ -93,23 +93,22 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lesha.pus@gmail.com" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O87-d0-SYd">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lesha.pus@gmail.com" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O87-d0-SYd">
                                 <rect key="frame" x="215" y="289" width="171" height="21"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="21" id="s0d-xt-3fU"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" red="0.65064578770000003" green="0.88341799620000006" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="8D7-Gh-saF" firstAttribute="top" relation="greaterThanOrEqual" secondItem="O87-d0-SYd" secondAttribute="bottom" constant="8" symbolic="YES" id="7Zl-qZ-eOg"/>
                             <constraint firstItem="phg-Bl-Xz2" firstAttribute="top" relation="greaterThanOrEqual" secondItem="8D7-Gh-saF" secondAttribute="bottom" constant="8" symbolic="YES" id="DBu-qS-xtr"/>
                             <constraint firstItem="8D7-Gh-saF" firstAttribute="top" secondItem="O87-d0-SYd" secondAttribute="bottom" priority="750" constant="50" id="Dze-PD-Cg9"/>
                             <constraint firstAttribute="centerX" secondItem="O87-d0-SYd" secondAttribute="centerX" id="SZ6-rK-Xva"/>
                             <constraint firstAttribute="centerY" secondItem="O87-d0-SYd" secondAttribute="centerY" constant="0.5" id="WMq-uW-GnZ"/>
+                            <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="O87-d0-SYd" secondAttribute="trailing" id="a2r-Hn-Pp4"/>
                             <constraint firstItem="phg-Bl-Xz2" firstAttribute="top" secondItem="8D7-Gh-saF" secondAttribute="bottom" priority="250" constant="141" id="fLY-0P-b23"/>
+                            <constraint firstItem="O87-d0-SYd" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="HoY-Cx-LSo" secondAttribute="leadingMargin" id="gLg-Lw-AUP"/>
                             <constraint firstAttribute="centerX" secondItem="ius-6h-d0m" secondAttribute="centerX" constant="-0.5" id="iNm-zG-HFu"/>
                             <constraint firstItem="O87-d0-SYd" firstAttribute="top" secondItem="ius-6h-d0m" secondAttribute="bottom" constant="20" id="o7I-zL-edU"/>
                             <constraint firstItem="O87-d0-SYd" firstAttribute="trailing" secondItem="HoY-Cx-LSo" secondAttribute="trailingMargin" id="rzx-ev-4Ex"/>

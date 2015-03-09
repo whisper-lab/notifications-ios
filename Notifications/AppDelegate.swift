@@ -86,6 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             }
             else {
             }
+            self.unregisterDeviceForUser()
         }
     }
     
@@ -126,23 +127,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         }
     }
     
-    func registerDeviceForUser(retryCounter:Int = 5) {
+    func registerDeviceForUser(retryCounter:Int = 4) {
         if let devToken = deviceToken {
             println("register")
             var token = deviceTokenString(devToken)
             
-            registerDeviceWithRetryCounter(retryCounter, deviceTokenString: token)
+            registerDeviceWithRetryCounter(retryCounter+1, deviceTokenString: token)
         }
         else {
             println("register: failed - divece token == nil")
         }
     }
     
-    func registerDeviceWithRetryCounter(var retryCounter:Int, deviceTokenString token: String) {
-        if (retryCounter == 0) {
+    func registerDeviceWithRetryCounter(var counter:Int, deviceTokenString token: String) {
+        if (counter == 0) {
             return;
         }
-        retryCounter--
+        counter--
         
         let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
         let api_key = prefs.stringForKey("API_KEY")!
@@ -171,33 +172,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 }
             })
             if succeeded {
-                var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-                let name = json!["name"]! as String
-                prefs.setObject(name, forKey: "NAME")
-                if let device = json!["device"] as? [String : AnyObject] {
-                    // safe to use user
-                    let deviceId = device["id"]! as Int
-                    let deviceReceivedToken = device["token"]! as String
-                    let devicePlatform = device["platform"]! as String
-                    prefs.setInteger(deviceId, forKey: "DEVICE_ID")
-                    prefs.setObject(deviceReceivedToken, forKey: "DEVICE_TOKEN")
-                    prefs.setObject(devicePlatform, forKey: "DEVICE_PLATFORM")
-                }
-                else {
-                    println("...with no device info")
-                }
-                prefs.synchronize()
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+                    let name = json!["name"]! as String
+                    prefs.setObject(name, forKey: "NAME")
+                    if let device = json!["device"] as? [String : AnyObject] {
+                        // safe to use user
+                        let deviceId = device["id"]! as Int
+                        let deviceReceivedToken = device["token"]! as String
+                        let devicePlatform = device["platform"]! as String
+                        prefs.setInteger(deviceId, forKey: "DEVICE_ID")
+                        prefs.setInteger(1, forKey: "IS_DEVICE_REGISTERED")
+                        prefs.setObject(deviceReceivedToken, forKey: "DEVICE_TOKEN")
+                        prefs.setObject(devicePlatform, forKey: "DEVICE_PLATFORM")
+                    }
+                    else {
+                        println("...with no device info")
+                    }
+                    prefs.synchronize()
+                })
             }
             else {
                 let delayInSeconds = 5.0
                 println("second retry after.. \(delayInSeconds) s")
-                println("retries left: \(retryCounter)");
+                println("retries left: \(counter)");
                 let delayInNanoSeconds = dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSeconds * Double(NSEC_PER_SEC)))
                 let concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
                 dispatch_after(delayInNanoSeconds, concurrentQueue, {
                     /* Perform your operations here */
                     println("Retry...");
-                    self?.registerDeviceWithRetryCounter(retryCounter, deviceTokenString: token)
+                    self?.registerDeviceWithRetryCounter(counter, deviceTokenString: token)
                 })
             }
         }
@@ -205,7 +209,87 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
     
     func unregisterDeviceForUser() {
-        println("unregister")
+        let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        if let logoutPending = prefs.arrayForKey("LOGOUT_PENDING") as Array? {
+            println("unregister")
+            println("\(logoutPending)")
+            
+            for item in logoutPending {
+                if let logoutItem = item as? Dictionary<String, AnyObject> {
+                    unregisterLogoutPendingItemWithRetryCounter(5, logoutPendingItem: logoutItem)
+                }
+            }
+        }
+        else {
+            println("nothing to unregister")
+        }
+    }
+    
+    func unregisterLogoutPendingItemWithRetryCounter(var counter:Int, logoutPendingItem item:Dictionary<String, AnyObject>) {
+        if (counter == 0) {
+            return
+        }
+        counter--
+        
+        let id = item["ID"] as Int
+        let deviceId = item["DEVICE_ID"] as Int
+        let deviceToken = item["DEVICE_TOKEN"] as String
+        let email = item["EMAIL"] as String
+        let api_key = item["API_KEY"] as String
+        
+        var params = ["device": ["token":deviceToken]]
+        println("DeleteData: \(params)")
+        
+        // Correct url and username/password
+        self.delete(params, withTokenStr: "\(email):\(api_key)", url: GlobalConstants.USERS_URL+"/\(id)/devices/\(deviceId)") { [weak self] (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> () in
+            if(succeeded) {
+                println("pending unregister SUCCESS");
+                if let d = json {
+                    println(d)
+                }
+                self?.removeLogoutPendingItemWith(id: id, deviceId: deviceId)
+            }
+            else {
+                println("pending unregister failed");
+                var q = false
+                if let d = json {
+                    println(d)
+                    if d["message"] as String == "Forbidden" {
+                        self?.removeLogoutPendingItemWith(id: id, deviceId: deviceId)
+                        q = true
+                    }
+                }
+                if !q {
+                    let delayInSeconds = 5.0
+                    println("second retry after.. \(delayInSeconds) s")
+                    println("retries left: \(counter)");
+                    let delayInNanoSeconds = dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSeconds * Double(NSEC_PER_SEC)))
+                    let concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                    dispatch_after(delayInNanoSeconds, concurrentQueue, {
+                        /* Perform your operations here */
+                        println("Retry...");
+                        self?.unregisterLogoutPendingItemWithRetryCounter(counter, logoutPendingItem: item)
+                    })
+                }
+            }
+        }
+    }
+    
+    func removeLogoutPendingItemWith(#id:Int, deviceId:Int) {
+        // Move to the UI thread
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+            if let logoutPending = prefs.arrayForKey("LOGOUT_PENDING") as Array? {
+                let arr = logoutPending.filter() { (item:AnyObject) -> Bool in
+                    if let itemDict = item as? Dictionary<String, AnyObject> {
+                        return itemDict["ID"] as Int != id || itemDict["DEVICE_ID"] as Int != deviceId
+                    }
+                    return false
+                }
+                prefs.setObject(arr, forKey: "LOGOUT_PENDING")
+            }
+            prefs.synchronize()
+        })
     }
     
     func get(params : Dictionary<String, AnyObject>, withTokenStr tokenStr : String? = nil, url : String, postCompleted : (succeeded: Bool, msg: String, json: [String : AnyObject]?) -> ()) {

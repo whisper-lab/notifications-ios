@@ -23,7 +23,15 @@ class MoreViewController: UIViewController {
         let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
         let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
         if (isLoggedIn == 1) {
-            self.nameLabel.text = prefs.valueForKey("EMAIL") as NSString
+            var str = ""
+            if let name = prefs.stringForKey("NAME") {
+                str += name
+                str += "\nemail: "
+            }
+            if let email = prefs.stringForKey("EMAIL") {
+                str += email
+            }
+            self.nameLabel.text = str
         }
     }
 
@@ -33,8 +41,28 @@ class MoreViewController: UIViewController {
     }
     
     @IBAction func logoutTapped(sender: UIButton) {
+        let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        var logoutPending:Array? = prefs.arrayForKey("LOGOUT_PENDING")
+        if logoutPending == nil {
+            logoutPending = []
+        }
+        
+        let isDeviceRegistered:Int = prefs.integerForKey("IS_DEVICE_REGISTERED") as Int
+        if isDeviceRegistered == 1 {
+            let id = prefs.integerForKey("ID")
+            let deviceId = prefs.integerForKey("DEVICE_ID")
+            let deviceToken = prefs.stringForKey("DEVICE_TOKEN")!
+            let email = prefs.stringForKey("EMAIL")!
+            let api_key = prefs.stringForKey("API_KEY")!
+            let item = ["ID": id, "DEVICE_ID": deviceId, "DEVICE_TOKEN": deviceToken, "EMAIL": email, "API_KEY": api_key]
+            logoutPending!.append(item)
+        }
+        
         let appDomain = NSBundle.mainBundle().bundleIdentifier
         NSUserDefaults.standardUserDefaults().removePersistentDomainForName(appDomain!)
+        
+        prefs.setObject(logoutPending!, forKey: "LOGOUT_PENDING")
+        prefs.synchronize()
         
         let delegate = UIApplication.sharedApplication().delegate as AppDelegate
         let tabBarViewController = delegate.window!.rootViewController as UITabBarController
