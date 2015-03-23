@@ -71,6 +71,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             self.statusChangedWithReachability(internetReach!)
         }
         
+        if let options = launchOptions {
+            if let note = options[UIApplicationLaunchOptionsRemoteNotificationKey] as? [NSObject: AnyObject] {
+                println("didFinishLaunchingWithOptions Notification:")
+                println(note)
+                println()
+            }
+        }
+        
         return true
     }
     
@@ -401,6 +409,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
         println("Error in registration. Error: \(error)")
+    }
+    
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        println("didReceiveRemoteNotification:")
+        println(userInfo)
+        println()
     }
 
     func applicationWillResignActive(application: UIApplication) {
