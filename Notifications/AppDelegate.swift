@@ -76,6 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 println("didFinishLaunchingWithOptions Notification:")
                 println(note)
                 println()
+                processRemoteNotification(note)
             }
         }
         
@@ -95,6 +96,59 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             else {
             }
             self.unregisterDeviceForUser()
+        }
+    }
+    
+    func processRemoteNotification(note: [NSObject: AnyObject]) {
+        let channel_id = note["channel"]!["id"] as Int
+        let channel_name = note["channel"]!["name"] as String
+        let message_id = note["message"]!["id"] as Int
+        let message_dateStr = note["message"]!["date"] as String
+        let message_body = (note["aps"]!["alert"] as [NSObject: AnyObject])["body"] as String
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss Z"
+        let message_date = dateFormatter.dateFromString(message_dateStr)
+
+        println(channel_id)
+        println(channel_name)
+        println(message_id)
+        println(message_body)
+        println(message_date)
+        
+        let context = self.managedObjectContext!
+        
+        let fetchRequest = NSFetchRequest()
+        let entity = NSEntityDescription.entityForName("Channel", inManagedObjectContext: context)
+        fetchRequest.entity = entity
+        let predicate = NSPredicate(format: "id == %@", String(channel_id))
+        fetchRequest.predicate = predicate
+        var channel: NSManagedObject
+        var error: NSError? = nil
+        let results = context.executeFetchRequest(fetchRequest, error: &error)
+        if results!.count > 0 {
+            println(results![0])
+            channel = results![0] as NSManagedObject
+        }
+        else {
+            let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Channel", inManagedObjectContext: context) as NSManagedObject
+            newManagedObject.setValue(channel_id, forKey: "id")
+            newManagedObject.setValue(channel_name, forKey: "name")
+            var error: NSError? = nil
+            if !context.save(&error) {
+                abort()
+            }
+            channel = newManagedObject
+        }
+        
+        let newManagedObject = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: context) as NSManagedObject
+        newManagedObject.setValue(message_id, forKey: "id")
+        newManagedObject.setValue(message_body, forKey: "body")
+        newManagedObject.setValue(message_date, forKey: "date")
+        newManagedObject.setValue(channel, forKey: "channel")
+        channel.mutableOrderedSetValueForKey("messages").addObject(newManagedObject)
+        var err: NSError? = nil
+        if !context.save(&err) {
+            abort()
         }
     }
     
@@ -415,6 +469,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         println("didReceiveRemoteNotification:")
         println(userInfo)
         println()
+        processRemoteNotification(userInfo)
     }
 
     func applicationWillResignActive(application: UIApplication) {

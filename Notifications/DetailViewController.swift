@@ -7,11 +7,11 @@
 //
 
 import UIKit
+import CoreData
 
 class DetailViewController: UIViewController {
 
-    @IBOutlet weak var detailDescriptionLabel: UILabel!
-
+    @IBOutlet weak var messagesTextView: UITextView!
 
     var detailItem: AnyObject? {
         didSet {
@@ -22,9 +22,24 @@ class DetailViewController: UIViewController {
 
     func configureView() {
         // Update the user interface for the detail item.
-        if let detail: AnyObject = self.detailItem {
-            if let label = self.detailDescriptionLabel {
-                label.text = detail.valueForKey("timeStamp")!.description
+        if let detail = self.detailItem as? NSManagedObject {
+            if let label = self.messagesTextView {
+                let id = detail.valueForKey("id") as Int
+                let name = detail.valueForKey("name") as String
+                self.title = "\(id): \(name)"
+                
+                let enumerator = detail.mutableOrderedSetValueForKey("messages").reverseObjectEnumerator()
+
+                var text = ""
+                while let message = enumerator.nextObject() as? NSManagedObject {
+                    let message_id = message.valueForKey("id") as Int
+                    let message_body = message.valueForKey("body") as String
+                    let message_date = message.valueForKey("date") as NSDate
+                    text += "\n#\(message_id)\n"
+                    text += message_body + "\n"
+                    text += message_date.description + "\n----------------------------\n"
+                }
+                label.text = text
             }
         }
     }
